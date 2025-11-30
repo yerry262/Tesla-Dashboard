@@ -19,8 +19,16 @@ const allowedOrigins = [
   'https://yerry262.github.io'
 ].filter(Boolean);
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 // Middleware
 app.use(express.json());
+
+// Trust proxy for Railway (required for secure cookies behind proxy)
+if (isProduction) {
+  app.set('trust proxy', 1);
+}
+
 app.use(cors({
   origin: function (origin, callback) {
     // Allow requests with no origin (mobile apps, curl, etc.)
@@ -38,10 +46,10 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: false, // Set to true in production with HTTPS
+    secure: isProduction, // true in production (HTTPS required)
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    sameSite: 'lax'
+    sameSite: isProduction ? 'none' : 'lax' // 'none' required for cross-origin in production
   }
 }));
 
