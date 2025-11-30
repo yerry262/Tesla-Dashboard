@@ -77,7 +77,6 @@ body {
   .main-content {
     margin-left: 0;
     padding: 1rem;
-    padding-top: 4rem; /* Add extra top padding to clear the fixed menu button */
   }
   
   /* Move page title to the right of the menu button */
