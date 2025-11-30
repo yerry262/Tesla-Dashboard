@@ -390,15 +390,17 @@
   .vehicle-row-header {
     padding: 1rem;
     flex-wrap: wrap;
+    gap: 0.5rem;
   }
 
   .vehicle-main-info {
     width: 100%;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
   }
 
   .vehicle-quick-info {
     flex: 1;
+    justify-content: flex-start;
   }
 
   .vehicle-expand-btn {
