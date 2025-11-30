@@ -12,6 +12,7 @@ import {
   FiX
 } from 'react-icons/fi';
 import './Layout.css';
+import { version } from '../../../package.json';
 
 const Layout = ({ children }) => {
   const { logout } = useAuth();
@@ -70,6 +71,7 @@ const Layout = ({ children }) => {
             <FiLogOut size={20} />
             <span>Logout</span>
           </button>
+          <div className="version-display">v{version}</div>
         </div>
       </aside>
 

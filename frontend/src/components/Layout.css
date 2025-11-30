@@ -79,6 +79,14 @@ object-fit: contain;
   color: var(--error-color);
 }
 
+.version-display {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--text-muted, #666);
+  padding-top: 0.75rem;
+  opacity: 0.7;
+}
+
 /* Mobile */
 .mobile-menu-btn {
   display: none;

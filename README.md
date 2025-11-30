@@ -4,6 +4,8 @@ A comprehensive React.js + Node.js dashboard for monitoring and controlling Tesl
 
 ![Torque Board](frontend/public/images/torque-board-logo.svg)
 
+**Current Version: v2.2.0**
+
 ## 🚀 Features
 
 - **OAuth 2.0 Authentication** - Secure login with Tesla accounts
@@ -1474,6 +1476,32 @@ Features:
 - **Climate Section**: Start/Stop, Temperature, Defrost, Dog/Camp Mode, Seat Heaters
 - **Charging Section**: Start/Stop, Port Control, Charge Limit Slider
 - **Security Section**: Lock/Unlock, Trunk, Frunk, Sentry Mode, Valet Mode
+
+---
+
+## 📋 Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| v2.2.0 | Current | Added Battery Health section with degradation gauges, version display in sidebar |
+| v2.1.0 | - | Battery monitoring, climate controls |
+| v2.0.0 | - | Initial production release with GitHub Pages + Railway deployment |
+
+### Updating the Version
+
+When releasing a new version, update the version number in these locations:
+
+1. **Root package.json**: `package.json` (this is where the version is pulled from)
+   ```json
+   "version": "X.X.X"
+   ```
+
+2. **Frontend package.json**: `frontend/package.json` (keep in sync)
+   ```json
+   "version": "X.X.X"
+   ```
+
+3. **README Version**: Update the "Current Version" line at the top of this file and add a new row to the Version History table above.
 
 ---
 

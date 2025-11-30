@@ -1,6 +1,6 @@
 {
   "name": "tesla-dashboard",
-  "version": "1.0.0",
+  "version": "2.2.0",
   "description": "Tesla Dashboard - Monitor your Tesla Model Y vehicle data",
   "scripts": {
     "install:all": "cd backend && npm install && cd ../frontend && npm install",
