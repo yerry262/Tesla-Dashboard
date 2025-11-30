@@ -5,6 +5,8 @@ const session = require('express-session');
 const authRoutes = require('./routes/auth');
 const vehicleRoutes = require('./routes/vehicles');
 const chargingRoutes = require('./routes/charging');
+const commandRoutes = require('./routes/commands');
+const userRoutes = require('./routes/user');
 
 const app = express();
 const PORT = process.env.PORT || 3033;
@@ -32,24 +34,15 @@ app.use(session({
 app.use('/auth', authRoutes);
 app.use('/api/vehicles', vehicleRoutes);
 app.use('/api/charging', chargingRoutes);
+app.use('/api/commands', commandRoutes);
+app.use('/api/user', userRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Tesla OAuth callback route (matches your configured redirect URI)
-app.get('/Tesla-Dashboard/callback', (req, res) => {
-  const { code, state } = req.query;
-  
-  if (code) {
-    // Redirect to frontend with the authorization code
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-    res.redirect(`${frontendUrl}/callback?code=${code}&state=${state}`);
-  } else {
-    res.status(400).json({ error: 'Authorization code not received' });
-  }
-});
+// Note: OAuth callback is now handled directly by the frontend at /callback
 
 // Error handling middleware
 app.use((err, req, res, next) => {

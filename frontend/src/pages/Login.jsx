@@ -1,6 +1,5 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
-import { FiZap } from 'react-icons/fi';
 import './Login.css';
 
 const Login = () => {
@@ -18,11 +17,9 @@ const Login = () => {
     <div className="login-page">
       <div className="login-container">
         <div className="login-header">
-          <div className="login-logo">
-            <FiZap size={48} />
+          <div className="login-logo" style={{display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '-3rem'}}>
+            <img src="/images/torque-board-logo.svg" alt="Torque Board" className="torque-logo-img" style={{width: '100%', maxWidth: '480px', aspectRatio: '1 / 1', marginTop: '0', display: 'block', marginBottom: '0'}} />
           </div>
-          <h1>Tesla Dashboard</h1>
-          <p>Monitor your Tesla Model Y in real-time</p>
         </div>
 
         <div className="login-content">
@@ -58,10 +55,10 @@ const Login = () => {
           </div>
 
           <button className="login-btn" onClick={handleLogin}>
-            <svg viewBox="0 0 342 35" className="tesla-logo">
+            Sign in with 
+                        <svg viewBox="0 0 342 35" className="tesla-logo">
               <path d="M0 .1a9.7 9.7 0 007 7h11l.5.1v27.6h6.8V7.3L26 7h11a9.8 9.8 0 007-7H0zm238.6 0h-6.8v34.8H263a9.7 9.7 0 006-6.8h-30.3V0zm-52.3 6.8c3.6-1 6.6-3.8 7.4-6.9l-38.1.1v20.6h31.1v7.2h-24.4a13.6 13.6 0 00-8.7 7h39.9v-21h-31.2v-7h24zm116.2 28h6.7v-14h24.6v14h6.7v-21h-38zM85.3 7h26a9.6 9.6 0 007.1-7H78.3a9.6 9.6 0 007 7zm0 13.8h26a9.6 9.6 0 007.1-7H78.3a9.6 9.6 0 007 7zm0 14.1h26a9.6 9.6 0 007.1-7H78.3a9.6 9.6 0 007 7zM308.5 7h26a9.6 9.6 0 007-7h-40a9.6 9.6 0 007 7z" fill="currentColor"/>
             </svg>
-            Sign in with Tesla
           </button>
 
           <p className="login-disclaimer">

@@ -8,10 +8,15 @@
   --text-secondary: #a0a0b2;
   --text-muted: #6b6b80;
   --border-color: #2a2a4a;
-  --success-color: #22c55e;
+  --success-color: #10b981;
   --warning-color: #f59e0b;
   --error-color: #ef4444;
   --info-color: #3b82f6;
+  
+  /* Aliases for component compatibility */
+  --card-bg: var(--background-card);
+  --bg-secondary: var(--background-card-hover);
+  --bg-primary: var(--background-dark);
 }
 
 * {

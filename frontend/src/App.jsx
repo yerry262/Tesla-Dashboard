@@ -5,6 +5,10 @@ import Login from './pages/Login.jsx';
 import Callback from './pages/Callback.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import VehicleDetail from './pages/VehicleDetail.jsx';
+import Vehicles from './pages/Vehicles.jsx';
+import Charging from './pages/Charging.jsx';
+import Location from './pages/Location.jsx';
+import Settings from './pages/Settings.jsx';
 import Layout from './components/Layout.jsx';
 
 // Protected Route component
@@ -48,6 +52,46 @@ function AppRoutes() {
           <ProtectedRoute>
             <Layout>
               <VehicleDetail />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/vehicles"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <Vehicles />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/charging"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <Charging />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/location"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <Location />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <Settings />
             </Layout>
           </ProtectedRoute>
         }

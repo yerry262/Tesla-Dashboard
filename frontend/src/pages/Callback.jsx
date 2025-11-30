@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import './Callback.css';
@@ -9,9 +9,14 @@ const Callback = () => {
   const { handleCallback } = useAuth();
   const [error, setError] = useState(null);
   const [processing, setProcessing] = useState(true);
+  const processedRef = useRef(false);
 
   useEffect(() => {
     const processCallback = async () => {
+      // Prevent double processing
+      if (processedRef.current) return;
+      processedRef.current = true;
+
       const code = searchParams.get('code');
       const state = searchParams.get('state');
       const errorParam = searchParams.get('error');
@@ -39,7 +44,8 @@ const Callback = () => {
     };
 
     processCallback();
-  }, [searchParams, handleCallback, navigate]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (error) {
     return (
