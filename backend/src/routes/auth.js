@@ -32,6 +32,9 @@ router.get('/login', (req, res) => {
  */
 router.post('/token', async (req, res) => {
   const { code, state } = req.body;
+  
+  console.log('🔐 Token exchange request received');
+  console.log('   Session ID:', req.sessionID);
 
   if (!code) {
     return res.status(400).json({ error: 'Authorization code is required' });
@@ -43,23 +46,38 @@ router.post('/token', async (req, res) => {
   try {
     const tokens = await teslaApi.exchangeCodeForToken(code);
     
+    console.log('✅ Token exchange successful');
+    console.log('   Access token received:', tokens.accessToken ? 'Yes' : 'No');
+    console.log('   Refresh token received:', tokens.refreshToken ? 'Yes' : 'No');
+    
     // Store tokens in session
     req.session.accessToken = tokens.accessToken;
     req.session.refreshToken = tokens.refreshToken;
     req.session.tokenExpiry = Date.now() + (tokens.expiresIn * 1000);
+    
+    // Force session save before responding
+    req.session.save((err) => {
+      if (err) {
+        console.error('❌ Session save error:', err);
+        return res.status(500).json({ error: 'Failed to save session' });
+      }
+      
+      console.log('✅ Session saved successfully');
+      console.log('   Session ID:', req.sessionID);
 
-    // Clean up used state
-    if (state && oauthStates.has(state)) {
-      oauthStates.delete(state);
-    }
+      // Clean up used state
+      if (state && oauthStates.has(state)) {
+        oauthStates.delete(state);
+      }
 
-    res.json({
-      success: true,
-      expiresIn: tokens.expiresIn,
-      message: 'Successfully authenticated with Tesla'
+      res.json({
+        success: true,
+        expiresIn: tokens.expiresIn,
+        message: 'Successfully authenticated with Tesla'
+      });
     });
   } catch (error) {
-    console.error('Token exchange error:', error);
+    console.error('❌ Token exchange error:', error);
     res.status(500).json({ error: 'Failed to exchange authorization code' });
   }
 });

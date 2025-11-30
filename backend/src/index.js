@@ -10,6 +10,15 @@ const userRoutes = require('./routes/user');
 
 const app = express();
 const PORT = process.env.PORT || 3034;
+const isProduction = process.env.NODE_ENV === 'production';
+
+console.log('🚀 Starting server with config:', {
+  PORT,
+  NODE_ENV: process.env.NODE_ENV,
+  isProduction,
+  FRONTEND_URL: process.env.FRONTEND_URL,
+  TESLA_REDIRECT_URI: process.env.TESLA_REDIRECT_URI
+});
 
 // Allowed origins for CORS
 const allowedOrigins = [
@@ -19,7 +28,7 @@ const allowedOrigins = [
   'https://yerry262.github.io'
 ].filter(Boolean);
 
-const isProduction = process.env.NODE_ENV === 'production';
+console.log('📋 Allowed CORS origins:', allowedOrigins);
 
 // Middleware
 app.use(express.json());
