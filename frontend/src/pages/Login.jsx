@@ -18,7 +18,7 @@ const Login = () => {
       <div className="login-container">
         <div className="login-header">
           <div className="login-logo" style={{display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '-3rem'}}>
-            <img src="/images/torque-board-logo.svg" alt="Torque Board" className="torque-logo-img" style={{width: '100%', maxWidth: '480px', aspectRatio: '1 / 1', marginTop: '0', display: 'block', marginBottom: '0'}} />
+            <img src={`${import.meta.env.BASE_URL}images/torque-board-logo.svg`} alt="Torque Board" className="torque-logo-img" style={{width: '100%', maxWidth: '480px', aspectRatio: '1 / 1', marginTop: '0', display: 'block', marginBottom: '0'}} />
           </div>
         </div>
 

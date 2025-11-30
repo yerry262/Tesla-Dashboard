@@ -45,7 +45,7 @@ const Layout = ({ children }) => {
       <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
           <div className="logo">
-            <img src="/images/torque-board-logo.svg" alt="Torque Board" className="logo-img" />
+            <img src={`${import.meta.env.BASE_URL}images/torque-board-logo.svg`} alt="Torque Board" className="logo-img" />
           </div>
         </div>
 
