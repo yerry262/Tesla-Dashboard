@@ -147,6 +147,11 @@ const Location = () => {
                 <div className="vehicle-offline">
                   <FiMapPin size={48} />
                   <p>Location data unavailable</p>
+                  <small>
+                    {driveState === null 
+                      ? 'Failed to fetch vehicle data' 
+                      : 'Location sharing may be disabled or requires firmware 2023.38+'}
+                  </small>
                 </div>
               )}
             </div>

@@ -47,7 +47,9 @@ router.get('/', requireAuth, async (req, res) => {
  */
 router.get('/:id', requireAuth, async (req, res) => {
   try {
-    const vehicleData = await teslaApi.getVehicleData(req.session.accessToken, req.params.id);
+    // Request all relevant data endpoints including location_data (required for firmware 2023.38+)
+    const endpoints = 'charge_state;climate_state;drive_state;gui_settings;vehicle_config;vehicle_state;location_data';
+    const vehicleData = await teslaApi.getVehicleData(req.session.accessToken, req.params.id, endpoints);
     res.json(vehicleData);
   } catch (error) {
     console.error('Error fetching vehicle data:', error);

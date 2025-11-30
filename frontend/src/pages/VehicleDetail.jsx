@@ -6,14 +6,26 @@ import {
   FiBattery, FiThermometer, FiMapPin, FiZap, FiWind, FiSun, FiMoon,
   FiVolume2, FiSkipForward, FiSkipBack, FiPlay, FiPause,
   FiNavigation, FiHome, FiSettings, FiShield, FiAlertTriangle,
-  FiChevronDown, FiChevronUp, FiCheck, FiX
+  FiChevronDown, FiChevronUp, FiCheck, FiX, FiActivity, FiHeart
 } from 'react-icons/fi';
 import { 
   BsLightningCharge, BsThermometerHalf, BsSnow, BsSpeedometer,
-  BsDoorOpen, BsCarFront, BsEvStation, BsGear
+  BsDoorOpen, BsCarFront, BsEvStation, BsGear, BsBatteryFull
 } from 'react-icons/bs';
 import { IoCarSport } from 'react-icons/io5';
 import './VehicleDetail.css';
+
+// EPA range data by car type (miles) - original factory range at 100%
+const EPA_RANGE_DATA = {
+  'models': { range: 405, battery_kwh: 100 },  // Model S Long Range
+  'modelx': { range: 348, battery_kwh: 100 },  // Model X Long Range
+  'model3': { range: 333, battery_kwh: 82 },   // Model 3 Long Range
+  'modely': { range: 330, battery_kwh: 82 },   // Model Y Long Range
+  'models2': { range: 375, battery_kwh: 95 },  // Model S (older)
+  'modelx2': { range: 315, battery_kwh: 95 },  // Model X (older)
+  'cybertruck': { range: 340, battery_kwh: 123 }, // Cybertruck
+  // Add more variants as needed
+};
 
 const VehicleDetail = () => {
   const { id } = useParams();
@@ -28,6 +40,7 @@ const VehicleDetail = () => {
   const [expandedSections, setExpandedSections] = useState({
     climate: true,
     charging: true,
+    batteryHealth: true,
     security: true,
     controls: false,
     software: false
@@ -121,6 +134,101 @@ const VehicleDetail = () => {
   const formatRange = (miles) => {
     if (miles == null) return '--';
     return `${Math.round(miles)} mi`;
+  };
+
+  // Battery health calculations
+  const getBatteryHealthData = () => {
+    const chargeState = vehicleData?.charge_state;
+    const vehicleConfig = vehicleData?.vehicle_config;
+    
+    if (!chargeState) return null;
+
+    const batteryLevel = chargeState.battery_level || 0;
+    const usableBatteryLevel = chargeState.usable_battery_level || batteryLevel;
+    const idealRange = chargeState.ideal_battery_range || 0;
+    const estRange = chargeState.est_battery_range || 0;
+    const ratedRange = chargeState.battery_range || 0;
+    
+    // Get car type for EPA lookup
+    const carType = vehicleConfig?.car_type?.toLowerCase() || 'model3';
+    const epaData = EPA_RANGE_DATA[carType] || EPA_RANGE_DATA['model3'];
+    
+    // Calculate full range at 100% (extrapolated from current data)
+    const fullIdealRange = batteryLevel > 0 ? (idealRange / batteryLevel) * 100 : 0;
+    const fullEstRange = batteryLevel > 0 ? (estRange / batteryLevel) * 100 : 0;
+    const fullRatedRange = batteryLevel > 0 ? (ratedRange / batteryLevel) * 100 : 0;
+    
+    // Battery health estimate (based on ideal range vs EPA)
+    const batteryHealthPercent = epaData.range > 0 ? Math.min(100, (fullIdealRange / epaData.range) * 100) : 0;
+    
+    // Estimated current kWh capacity
+    const estimatedCurrentKwh = (batteryHealthPercent / 100) * epaData.battery_kwh;
+    
+    // Energy in battery right now
+    const currentEnergyKwh = (batteryLevel / 100) * estimatedCurrentKwh;
+    
+    // Degradation
+    const degradationPercent = 100 - batteryHealthPercent;
+    
+    return {
+      batteryLevel,
+      usableBatteryLevel,
+      idealRange: Math.round(idealRange),
+      estRange: Math.round(estRange),
+      ratedRange: Math.round(ratedRange),
+      fullIdealRange: Math.round(fullIdealRange),
+      fullEstRange: Math.round(fullEstRange),
+      fullRatedRange: Math.round(fullRatedRange),
+      epaRange: epaData.range,
+      originalKwh: epaData.battery_kwh,
+      estimatedCurrentKwh: estimatedCurrentKwh.toFixed(1),
+      currentEnergyKwh: currentEnergyKwh.toFixed(1),
+      batteryHealthPercent: batteryHealthPercent.toFixed(1),
+      degradationPercent: degradationPercent.toFixed(1),
+      carType: carType
+    };
+  };
+
+  // Circular gauge component
+  const CircularGauge = ({ value, max, label, unit, color = '#3b82f6', size = 120 }) => {
+    const percentage = Math.min(100, (value / max) * 100);
+    const circumference = 2 * Math.PI * 45; // radius of 45
+    const strokeDasharray = circumference;
+    const strokeDashoffset = circumference - (percentage / 100) * circumference;
+    
+    return (
+      <div className="circular-gauge" style={{ width: size, height: size }}>
+        <svg viewBox="0 0 100 100">
+          {/* Background circle */}
+          <circle
+            cx="50"
+            cy="50"
+            r="45"
+            fill="none"
+            stroke="var(--border-color)"
+            strokeWidth="8"
+          />
+          {/* Progress circle */}
+          <circle
+            cx="50"
+            cy="50"
+            r="45"
+            fill="none"
+            stroke={color}
+            strokeWidth="8"
+            strokeLinecap="round"
+            strokeDasharray={strokeDasharray}
+            strokeDashoffset={strokeDashoffset}
+            transform="rotate(-90 50 50)"
+            style={{ transition: 'stroke-dashoffset 0.5s ease' }}
+          />
+        </svg>
+        <div className="gauge-content">
+          <span className="gauge-value">{value}{unit}</span>
+          <span className="gauge-label">{label}</span>
+        </div>
+      </div>
+    );
   };
 
   const getButtonClass = (commandName) => {
@@ -476,6 +584,185 @@ const VehicleDetail = () => {
                     >
                       Set
                     </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Battery Health Section */}
+          <div className="control-section battery-health-section">
+            <div className="section-header" onClick={() => toggleSection('batteryHealth')}>
+              <div className="section-title">
+                <FiHeart size={20} />
+                <span>Battery Health & Stats</span>
+              </div>
+              <div className="section-status">
+                {getBatteryHealthData() && (
+                  <span className={`status-badge ${parseFloat(getBatteryHealthData()?.batteryHealthPercent) > 90 ? 'active' : parseFloat(getBatteryHealthData()?.batteryHealthPercent) > 80 ? '' : 'warning'}`}>
+                    {getBatteryHealthData()?.batteryHealthPercent}% Health
+                  </span>
+                )}
+                {expandedSections.batteryHealth ? <FiChevronUp size={20} /> : <FiChevronDown size={20} />}
+              </div>
+            </div>
+            
+            {expandedSections.batteryHealth && getBatteryHealthData() && (
+              <div className="section-content">
+                {/* Main Gauges Row */}
+                <div className="battery-gauges">
+                  <div className="gauge-container">
+                    <CircularGauge 
+                      value={getBatteryHealthData().batteryLevel} 
+                      max={100} 
+                      label="Charge" 
+                      unit="%" 
+                      color="#22c55e"
+                      size={130}
+                    />
+                    <span className="gauge-subtitle">Current Level</span>
+                  </div>
+                  <div className="gauge-container">
+                    <CircularGauge 
+                      value={parseFloat(getBatteryHealthData().batteryHealthPercent)} 
+                      max={100} 
+                      label="Health" 
+                      unit="%" 
+                      color={parseFloat(getBatteryHealthData().batteryHealthPercent) > 90 ? '#22c55e' : parseFloat(getBatteryHealthData().batteryHealthPercent) > 80 ? '#f59e0b' : '#ef4444'}
+                      size={130}
+                    />
+                    <span className="gauge-subtitle">Battery Health</span>
+                  </div>
+                  <div className="gauge-container">
+                    <CircularGauge 
+                      value={parseFloat(getBatteryHealthData().currentEnergyKwh)} 
+                      max={parseFloat(getBatteryHealthData().estimatedCurrentKwh)} 
+                      label="kWh" 
+                      unit="" 
+                      color="#3b82f6"
+                      size={130}
+                    />
+                    <span className="gauge-subtitle">Energy Available</span>
+                  </div>
+                </div>
+
+                {/* Battery Stats Grid */}
+                <div className="battery-stats-grid">
+                  <div className="battery-stat-card">
+                    <div className="stat-header">
+                      <BsBatteryFull size={18} />
+                      <span>Pack Capacity</span>
+                    </div>
+                    <div className="stat-body">
+                      <div className="stat-row">
+                        <span>Original Capacity</span>
+                        <span className="stat-value">{getBatteryHealthData().originalKwh} kWh</span>
+                      </div>
+                      <div className="stat-row">
+                        <span>Estimated Current</span>
+                        <span className="stat-value">{getBatteryHealthData().estimatedCurrentKwh} kWh</span>
+                      </div>
+                      <div className="stat-row">
+                        <span>Energy Right Now</span>
+                        <span className="stat-value highlight">{getBatteryHealthData().currentEnergyKwh} kWh</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="battery-stat-card">
+                    <div className="stat-header">
+                      <FiActivity size={18} />
+                      <span>Degradation</span>
+                    </div>
+                    <div className="stat-body">
+                      <div className="stat-row">
+                        <span>Battery Health</span>
+                        <span className="stat-value good">{getBatteryHealthData().batteryHealthPercent}%</span>
+                      </div>
+                      <div className="stat-row">
+                        <span>Estimated Degradation</span>
+                        <span className="stat-value">{getBatteryHealthData().degradationPercent}%</span>
+                      </div>
+                      <div className="stat-row">
+                        <span>Usable vs Total</span>
+                        <span className="stat-value">{getBatteryHealthData().usableBatteryLevel}% / {getBatteryHealthData().batteryLevel}%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Range Comparison */}
+                <div className="range-comparison">
+                  <h4 className="comparison-title">Range Analysis (at 100% charge)</h4>
+                  <div className="range-bars">
+                    <div className="range-bar-item">
+                      <div className="range-bar-label">
+                        <span>EPA Rated</span>
+                        <span>{getBatteryHealthData().epaRange} mi</span>
+                      </div>
+                      <div className="range-bar-track">
+                        <div 
+                          className="range-bar-fill epa" 
+                          style={{ width: '100%' }}
+                        />
+                      </div>
+                    </div>
+                    <div className="range-bar-item">
+                      <div className="range-bar-label">
+                        <span>Your Ideal Range</span>
+                        <span>{getBatteryHealthData().fullIdealRange} mi</span>
+                      </div>
+                      <div className="range-bar-track">
+                        <div 
+                          className="range-bar-fill ideal" 
+                          style={{ width: `${(getBatteryHealthData().fullIdealRange / getBatteryHealthData().epaRange) * 100}%` }}
+                        />
+                      </div>
+                    </div>
+                    <div className="range-bar-item">
+                      <div className="range-bar-label">
+                        <span>Estimated Range</span>
+                        <span>{getBatteryHealthData().fullEstRange} mi</span>
+                      </div>
+                      <div className="range-bar-track">
+                        <div 
+                          className="range-bar-fill estimated" 
+                          style={{ width: `${(getBatteryHealthData().fullEstRange / getBatteryHealthData().epaRange) * 100}%` }}
+                        />
+                      </div>
+                    </div>
+                    <div className="range-bar-item">
+                      <div className="range-bar-label">
+                        <span>Rated Range</span>
+                        <span>{getBatteryHealthData().fullRatedRange} mi</span>
+                      </div>
+                      <div className="range-bar-track">
+                        <div 
+                          className="range-bar-fill rated" 
+                          style={{ width: `${(getBatteryHealthData().fullRatedRange / getBatteryHealthData().epaRange) * 100}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Current Range Stats */}
+                <div className="current-range-stats">
+                  <div className="range-stat">
+                    <span className="range-stat-label">Current Ideal</span>
+                    <span className="range-stat-value">{getBatteryHealthData().idealRange} mi</span>
+                  </div>
+                  <div className="range-stat">
+                    <span className="range-stat-label">Current Est.</span>
+                    <span className="range-stat-value">{getBatteryHealthData().estRange} mi</span>
+                  </div>
+                  <div className="range-stat">
+                    <span className="range-stat-label">Current Rated</span>
+                    <span className="range-stat-value">{getBatteryHealthData().ratedRange} mi</span>
+                  </div>
+                  <div className="range-stat">
+                    <span className="range-stat-label">Model</span>
+                    <span className="range-stat-value">{getBatteryHealthData().carType.toUpperCase()}</span>
                   </div>
                 </div>
               </div>

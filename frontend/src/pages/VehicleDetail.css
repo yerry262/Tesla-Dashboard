@@ -496,6 +496,256 @@
   }
 }
 
+/* ========================================
+   Battery Health Section Styles
+   ======================================== */
+
+.battery-health-section .section-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Circular Gauges */
+.battery-gauges {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  padding: 1rem 0;
+}
+
+.gauge-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.circular-gauge {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.circular-gauge svg {
+  width: 100%;
+  height: 100%;
+}
+
+.gauge-content {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.gauge-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.gauge-label {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.gauge-subtitle {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+/* Battery Stats Grid */
+.battery-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.battery-stat-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.stat-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-primary);
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.stat-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+}
+
+.stat-row span:first-child {
+  color: var(--text-secondary);
+}
+
+.stat-value {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.stat-value.highlight {
+  color: var(--primary-color);
+}
+
+.stat-value.good {
+  color: #22c55e;
+}
+
+/* Range Comparison */
+.range-comparison {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.comparison-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.range-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.range-bar-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.range-bar-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+}
+
+.range-bar-label span:first-child {
+  color: var(--text-secondary);
+}
+
+.range-bar-label span:last-child {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.range-bar-track {
+  height: 8px;
+  background: var(--border-color);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.range-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.range-bar-fill.epa {
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+}
+
+.range-bar-fill.ideal {
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+}
+
+.range-bar-fill.estimated {
+  background: linear-gradient(90deg, #f59e0b, #d97706);
+}
+
+.range-bar-fill.rated {
+  background: linear-gradient(90deg, #3b82f6, #2563eb);
+}
+
+/* Current Range Stats */
+.current-range-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.75rem;
+}
+
+.range-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.75rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+}
+
+.range-stat-label {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.range-stat-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Mobile responsiveness for battery section */
+@media (max-width: 640px) {
+  .battery-gauges {
+    gap: 1rem;
+  }
+
+  .gauge-container {
+    flex: 1;
+    min-width: 100px;
+  }
+
+  .circular-gauge {
+    width: 100px !important;
+    height: 100px !important;
+  }
+
+  .gauge-value {
+    font-size: 1.2rem;
+  }
+
+  .battery-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .current-range-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 /* Animations */
 @keyframes spin {
   to { transform: rotate(360deg); }
