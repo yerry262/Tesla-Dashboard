@@ -131,6 +131,105 @@ npm run dev
 
 Open http://localhost:3033 in your browser.
 
+---
+
+## 🌐 Production Deployment
+
+This application is deployed with:
+- **Frontend:** GitHub Pages (https://yerry262.github.io/Tesla-Dashboard/)
+- **Backend:** Railway (https://tesla-dashboard-production-7fcd.up.railway.app)
+
+### Frontend Deployment (GitHub Pages)
+
+The frontend is automatically deployed via GitHub Actions when pushing to the `main` branch.
+
+**Key Configuration:**
+- `vite.config.js` has `base: '/Tesla-Dashboard/'` for GitHub Pages subpath
+- `frontend/src/main.jsx` uses `basename` for React Router in production
+- Asset paths use `import.meta.env.BASE_URL` for proper resolution
+- `frontend/public/404.html` handles SPA routing for GitHub Pages
+
+### Backend Deployment (Railway)
+
+1. **Create a Railway Project:**
+   - Go to [Railway](https://railway.app)
+   - Create new project from GitHub repo
+   - Select the `backend` folder as the root directory
+
+2. **Set Environment Variables in Railway:**
+   ```
+   TESLA_CLIENT_ID=your_tesla_client_id
+   TESLA_CLIENT_SECRET=your_tesla_client_secret
+   TESLA_REDIRECT_URI=https://yourusername.github.io/Tesla-Dashboard/callback
+   TESLA_AUTH_URL=https://auth.tesla.com/oauth2/v3/authorize
+   TESLA_TOKEN_URL=https://fleet-auth.prd.vn.cloud.tesla.com/oauth2/v3/token
+   TESLA_API_BASE_URL=https://fleet-api.prd.na.vn.cloud.tesla.com
+   FRONTEND_URL=https://yourusername.github.io/Tesla-Dashboard
+   SESSION_SECRET=your_random_secret_string
+   NODE_ENV=production
+   TESLA_SCOPES=openid offline_access user_data vehicle_device_data vehicle_location vehicle_cmds vehicle_charging_cmds
+   ```
+
+3. **Railway Auto-Configuration:**
+   - Railway automatically detects Node.js and sets the `PORT` environment variable
+   - The backend uses `process.env.PORT` which Railway provides
+
+### Tesla Developer Portal Configuration
+
+In your [Tesla Developer Dashboard](https://developer.tesla.com/dashboard):
+
+1. **Allowed Origin(s):**
+   ```
+   https://yourusername.github.io/
+   http://localhost:3033/
+   ```
+
+2. **Allowed Redirect URI(s):**
+   ```
+   https://yourusername.github.io/Tesla-Dashboard/callback
+   http://localhost:3033/callback
+   ```
+
+### Cross-Origin Cookie Configuration
+
+When frontend and backend are on different domains, cookies require special settings:
+
+```javascript
+// backend/src/index.js
+app.use(session({
+  cookie: {
+    secure: true,           // Required for HTTPS
+    sameSite: 'none',       // Required for cross-origin
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000
+  }
+}));
+
+// Trust proxy for Railway (behind load balancer)
+app.set('trust proxy', 1);
+```
+
+### Virtual Key Pairing (For Vehicle Commands)
+
+To send commands to your Tesla (not just read data), you need to pair a virtual key:
+
+1. **Host your public key** at:
+   ```
+   https://yourdomain.com/.well-known/appspecific/com.tesla.3p.public-key.pem
+   ```
+   
+2. **Register with Tesla:**
+   ```bash
+   node scripts/register-partner.js
+   ```
+
+3. **Pair on your phone:**
+   - Open: `https://tesla.com/_ak/yourdomain.com`
+   - Or with VIN: `https://tesla.com/_ak/yourdomain.com?vin=YOUR_VIN`
+   - Tap the key card on your phone when prompted
+
+---
+
 ## 🔌 Tesla Fleet API Endpoints
 
 This dashboard implements 70+ Tesla Fleet API endpoints. Below is a comprehensive list of all APIs used and example response data.
