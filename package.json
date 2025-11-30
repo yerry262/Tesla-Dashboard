@@ -1,0 +1,26 @@
+{
+  "name": "tesla-dashboard",
+  "version": "1.0.0",
+  "description": "Tesla Dashboard - Monitor your Tesla Model Y vehicle data",
+  "scripts": {
+    "install:all": "cd backend && npm install && cd ../frontend && npm install",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm start",
+    "start:backend": "cd backend && npm start",
+    "build:frontend": "cd frontend && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yerry262/Tesla-Dashboard.git"
+  },
+  "keywords": [
+    "tesla",
+    "dashboard",
+    "fleet-api",
+    "model-y",
+    "react",
+    "nodejs"
+  ],
+  "author": "",
+  "license": "MIT"
+}
