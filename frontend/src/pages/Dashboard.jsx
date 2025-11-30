@@ -152,16 +152,15 @@ const Dashboard = () => {
                     <span className="vehicle-emoji-icon">🚗</span>
                     <div className="vehicle-name-section">
                       <h3 className="vehicle-name">{vehicle.display_name || 'Tesla Vehicle'}</h3>
-                      <span className="vehicle-model-badge">
-                        {vehicle.vehicle_config?.car_type?.replace(/_/g, ' ').toUpperCase() || 'Tesla'}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="vehicle-quick-info">
-                    <div className={`vehicle-status-badge status-${stateInfo.class}`}>
-                      <StateIcon size={14} />
-                      <span>{stateInfo.label}</span>
+                      <div className="vehicle-badges-row">
+                        <span className="vehicle-model-badge">
+                          {vehicle.vehicle_config?.car_type?.replace(/_/g, ' ').toUpperCase() || 'Tesla'}
+                        </span>
+                        <div className={`vehicle-status-badge status-${stateInfo.class}`}>
+                          <StateIcon size={14} />
+                          <span>{stateInfo.label}</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
