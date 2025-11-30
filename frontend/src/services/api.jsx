@@ -1,8 +1,12 @@
 import axios from 'axios';
 
-// In Vite, use import.meta.env instead of process.env
-// Since we're using the proxy in vite.config.js, we can use relative URLs
-const API_URL = import.meta.env.VITE_API_URL || '';
+// Determine API URL based on environment
+// In production (GitHub Pages), use the Railway backend
+// In development, use the Vite proxy (empty string means relative URLs)
+const isProduction = import.meta.env.PROD;
+const API_URL = isProduction 
+  ? 'https://tesla-dashboard-production-7fcd.up.railway.app'
+  : (import.meta.env.VITE_API_URL || '');
 
 const api = axios.create({
   baseURL: API_URL,
