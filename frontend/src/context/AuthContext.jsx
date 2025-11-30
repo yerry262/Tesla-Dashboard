@@ -44,7 +44,16 @@ export const AuthProvider = ({ children }) => {
 
   const handleCallback = async (code, state) => {
     try {
-      await api.post('/auth/token', { code, state });
+      const response = await api.post('/auth/token', { code, state });
+      
+      // Store tokens in localStorage for mobile support (where cookies might be blocked)
+      if (response.data.accessToken) {
+        localStorage.setItem('accessToken', response.data.accessToken);
+      }
+      if (response.data.refreshToken) {
+        localStorage.setItem('refreshToken', response.data.refreshToken);
+      }
+      
       setIsAuthenticated(true);
       return true;
     } catch (error) {
@@ -59,17 +68,31 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
       setIsAuthenticated(false);
     }
   };
 
   const refreshToken = async () => {
     try {
-      await api.post('/auth/refresh');
+      // Try to get refresh token from storage if not in cookie
+      const storedRefreshToken = localStorage.getItem('refreshToken');
+      const response = await api.post('/auth/refresh', { refreshToken: storedRefreshToken });
+      
+      if (response.data.accessToken) {
+        localStorage.setItem('accessToken', response.data.accessToken);
+      }
+      if (response.data.refreshToken) {
+        localStorage.setItem('refreshToken', response.data.refreshToken);
+      }
+
       setIsAuthenticated(true);
       return true;
     } catch (error) {
       console.error('Token refresh failed:', error);
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
       setIsAuthenticated(false);
       return false;
     }

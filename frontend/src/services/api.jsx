@@ -16,6 +16,18 @@ const api = axios.create({
   }
 });
 
+// Request interceptor to add Bearer token
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 // Response interceptor for handling token expiration
 api.interceptors.response.use(
   (response) => response,
@@ -27,10 +39,24 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        await api.post('/auth/refresh');
+        const refreshToken = localStorage.getItem('refreshToken');
+        const response = await api.post('/auth/refresh', { refreshToken });
+        
+        // Update tokens if returned
+        if (response.data.accessToken) {
+          localStorage.setItem('accessToken', response.data.accessToken);
+          // Update the failed request's header with new token
+          originalRequest.headers.Authorization = `Bearer ${response.data.accessToken}`;
+        }
+        if (response.data.refreshToken) {
+          localStorage.setItem('refreshToken', response.data.refreshToken);
+        }
+
         return api(originalRequest);
       } catch (refreshError) {
-        // Redirect to login if refresh fails
+        // Clear tokens and redirect to login if refresh fails
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
         window.location.href = '/login';
         return Promise.reject(refreshError);
       }

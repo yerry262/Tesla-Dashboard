@@ -1,14 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const teslaApi = require('../services/teslaApi');
-
-// Middleware to check authentication
-const requireAuth = (req, res, next) => {
-  if (!req.session?.accessToken) {
-    return res.status(401).json({ error: 'Not authenticated' });
-  }
-  next();
-};
+const requireAuth = require('../middleware/auth');
 
 router.use(requireAuth);
 

@@ -1,28 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const teslaApi = require('../services/teslaApi');
+const requireAuth = require('../middleware/auth');
 
-// Middleware to check authentication
-const requireAuth = (req, res, next) => {
-  console.log('🔒 Auth check for /api/vehicles');
-  console.log('   Session ID:', req.sessionID);
-  console.log('   Has access token:', !!req.session.accessToken);
-  console.log('   Cookies received:', req.headers.cookie);
-  
-  if (!req.session.accessToken) {
-    console.log('❌ No access token in session');
-    return res.status(401).json({ error: 'Authentication required' });
-  }
-  
-  // Check if token is expired
-  if (req.session.tokenExpiry && Date.now() > req.session.tokenExpiry) {
-    console.log('❌ Token expired');
-    return res.status(401).json({ error: 'Token expired', code: 'TOKEN_EXPIRED' });
-  }
-  
-  console.log('✅ Auth check passed');
-  next();
-};
+router.use(requireAuth);
 
 /**
  * GET /api/vehicles

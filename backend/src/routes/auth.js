@@ -73,6 +73,8 @@ router.post('/token', async (req, res) => {
       res.json({
         success: true,
         expiresIn: tokens.expiresIn,
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
         message: 'Successfully authenticated with Tesla'
       });
     });
@@ -102,7 +104,9 @@ router.post('/refresh', async (req, res) => {
 
     res.json({
       success: true,
-      expiresIn: tokens.expiresIn
+      expiresIn: tokens.expiresIn,
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken
     });
   } catch (error) {
     console.error('Token refresh error:', error);
@@ -115,12 +119,22 @@ router.post('/refresh', async (req, res) => {
  * Check authentication status
  */
 router.get('/status', (req, res) => {
-  const isAuthenticated = !!req.session.accessToken;
-  const isExpired = req.session.tokenExpiry ? Date.now() > req.session.tokenExpiry : true;
+  // Check session first
+  let accessToken = req.session.accessToken;
+  
+  // If no session token, check Bearer header
+  if (!accessToken && req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+    accessToken = req.headers.authorization.substring(7);
+  }
+
+  const isAuthenticated = !!accessToken;
+  // We can't easily check expiry for Bearer token without decoding or storing it, 
+  // so we assume it's valid if present (client handles 401s)
+  const isExpired = req.session.tokenExpiry ? Date.now() > req.session.tokenExpiry : false;
 
   res.json({
     authenticated: isAuthenticated && !isExpired,
-    hasRefreshToken: !!req.session.refreshToken
+    hasRefreshToken: !!req.session.refreshToken // This might be false for Bearer auth, but that's ok
   });
 });
 
