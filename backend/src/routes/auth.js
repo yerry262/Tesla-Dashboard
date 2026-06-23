@@ -79,8 +79,11 @@ router.post('/token', async (req, res) => {
       });
     });
   } catch (error) {
-    console.error('❌ Token exchange error:', error);
-    res.status(500).json({ error: 'Failed to exchange authorization code' });
+    console.error('❌ Token exchange error:', error.message, error.teslaError || '');
+    res.status(error.status || 500).json({
+      error: error.message || 'Failed to exchange authorization code',
+      details: error.teslaError || null
+    });
   }
 });
 

@@ -20,6 +20,17 @@ console.log('🚀 Starting server with config:', {
   TESLA_REDIRECT_URI: process.env.TESLA_REDIRECT_URI
 });
 
+// Validate required env vars early so Railway logs make the issue obvious
+const requiredEnvVars = ['TESLA_CLIENT_ID', 'TESLA_CLIENT_SECRET', 'TESLA_REDIRECT_URI'];
+const missingVars = requiredEnvVars.filter(v => !process.env[v]);
+if (missingVars.length > 0) {
+  console.error('❌ MISSING REQUIRED ENV VARS:', missingVars.join(', '));
+  console.error('   Auth will fail until these are set in Railway.');
+} else {
+  console.log('✅ All required Tesla env vars are set');
+  console.log('   TESLA_REDIRECT_URI:', process.env.TESLA_REDIRECT_URI);
+}
+
 // Allowed origins for CORS
 const allowedOrigins = [
   process.env.FRONTEND_URL,

@@ -10,6 +10,10 @@ class TeslaAPI {
     this.clientSecret = process.env.TESLA_CLIENT_SECRET;
     this.redirectUri = process.env.TESLA_REDIRECT_URI;
     this.scopes = process.env.TESLA_SCOPES || 'openid offline_access user_data vehicle_device_data vehicle_location vehicle_cmds vehicle_charging_cmds energy_device_data energy_cmds';
+
+    if (!this.clientId) console.warn('⚠️  TESLA_CLIENT_ID is not set');
+    if (!this.clientSecret) console.warn('⚠️  TESLA_CLIENT_SECRET is not set');
+    if (!this.redirectUri) console.warn('⚠️  TESLA_REDIRECT_URI is not set — token exchange will fail');
   }
 
   /**
@@ -32,8 +36,17 @@ class TeslaAPI {
    * Exchange authorization code for access token
    */
   async exchangeCodeForToken(code) {
+    if (!this.redirectUri) {
+      throw new Error('TESLA_REDIRECT_URI is not configured on the server');
+    }
+
+    console.log('🔄 Exchanging code for token');
+    console.log('   redirect_uri:', this.redirectUri);
+    console.log('   client_id:', this.clientId);
+    console.log('   audience:', TESLA_API_BASE_URL);
+
     try {
-      const response = await axios.post(TESLA_TOKEN_URL, 
+      const response = await axios.post(TESLA_TOKEN_URL,
         new URLSearchParams({
           grant_type: 'authorization_code',
           client_id: this.clientId,
@@ -56,8 +69,13 @@ class TeslaAPI {
         tokenType: response.data.token_type
       };
     } catch (error) {
-      console.error('Token exchange error:', error.response?.data || error.message);
-      throw new Error('Failed to exchange authorization code for token');
+      const teslaError = error.response?.data;
+      console.error('Token exchange error from Tesla:', teslaError || error.message);
+      const message = teslaError?.error_description || teslaError?.error || error.message || 'Failed to exchange authorization code for token';
+      const err = new Error(message);
+      err.teslaError = teslaError;
+      err.status = error.response?.status;
+      throw err;
     }
   }
 
