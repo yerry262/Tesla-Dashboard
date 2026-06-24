@@ -1,14 +1,17 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { FiUser, FiLogOut, FiInfo, FiGithub } from 'react-icons/fi';
 import './Settings.css';
 
 const Settings = () => {
   const { logout } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
     await logout();
-    window.location.href = '/login';
+    // navigate respects the BrowserRouter basename (GitHub Pages subpath)
+    navigate('/login');
   };
 
   return (

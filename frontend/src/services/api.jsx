@@ -57,7 +57,9 @@ api.interceptors.response.use(
         // Clear tokens and redirect to login if refresh fails
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
-        window.location.href = '/login';
+        // Respect the GitHub Pages subpath basename in production
+        const base = import.meta.env.PROD ? '/Tesla-Dashboard' : '';
+        window.location.href = base + '/login';
         return Promise.reject(refreshError);
       }
     }
