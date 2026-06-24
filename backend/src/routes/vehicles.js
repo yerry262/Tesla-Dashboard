@@ -9,7 +9,7 @@ router.use(requireAuth);
  * GET /api/vehicles
  * Get list of all vehicles
  */
-router.get('/', requireAuth, async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const vehicles = await teslaApi.getVehicles(req.session.accessToken);
     res.json(vehicles);
@@ -26,7 +26,7 @@ router.get('/', requireAuth, async (req, res) => {
  * GET /api/vehicles/:id
  * Get vehicle data by ID
  */
-router.get('/:id', requireAuth, async (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
     // Don't specify endpoints - let Tesla API return all available data
     // The API will return charge_state, climate_state, drive_state, vehicle_state, vehicle_config, gui_settings
@@ -49,7 +49,7 @@ router.get('/:id', requireAuth, async (req, res) => {
  * POST /api/vehicles/:id/wake
  * Wake up a vehicle
  */
-router.post('/:id/wake', requireAuth, async (req, res) => {
+router.post('/:id/wake', async (req, res) => {
   try {
     const result = await teslaApi.wakeUpVehicle(req.session.accessToken, req.params.id);
     res.json(result);
@@ -66,7 +66,7 @@ router.post('/:id/wake', requireAuth, async (req, res) => {
  * GET /api/vehicles/:id/mobile-enabled
  * Check if mobile access is enabled
  */
-router.get('/:id/mobile-enabled', requireAuth, async (req, res) => {
+router.get('/:id/mobile-enabled', async (req, res) => {
   try {
     const result = await teslaApi.isMobileEnabled(req.session.accessToken, req.params.id);
     res.json(result);
@@ -83,7 +83,7 @@ router.get('/:id/mobile-enabled', requireAuth, async (req, res) => {
  * GET /api/vehicles/:id/service
  * Get service data
  */
-router.get('/:id/service', requireAuth, async (req, res) => {
+router.get('/:id/service', async (req, res) => {
   try {
     const result = await teslaApi.getServiceData(req.session.accessToken, req.params.id);
     res.json(result);
@@ -100,7 +100,7 @@ router.get('/:id/service', requireAuth, async (req, res) => {
  * GET /api/vehicles/:id/release-notes
  * Get firmware release notes
  */
-router.get('/:id/release-notes', requireAuth, async (req, res) => {
+router.get('/:id/release-notes', async (req, res) => {
   try {
     const result = await teslaApi.getReleaseNotes(req.session.accessToken, req.params.id);
     res.json(result);

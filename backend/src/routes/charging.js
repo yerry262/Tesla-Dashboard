@@ -9,7 +9,7 @@ router.use(requireAuth);
  * GET /api/charging/:vehicleId/nearby
  * Get nearby charging sites
  */
-router.get('/:vehicleId/nearby', requireAuth, async (req, res) => {
+router.get('/:vehicleId/nearby', async (req, res) => {
   try {
     const chargingSites = await teslaApi.getNearbyChargingSites(
       req.session.accessToken, 

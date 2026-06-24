@@ -56,3 +56,6 @@ private-key.pem
 .cache/
 .temp/
 Thumbs.db
+
+# Backup files
+*.bak
