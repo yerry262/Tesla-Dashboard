@@ -38,7 +38,11 @@ const Callback = () => {
         navigate('/', { replace: true });
       } catch (err) {
         console.error('Callback error:', err);
-        setError('Failed to complete authentication. Please try again.');
+        const message =
+          err.response?.data?.error ||
+          err.message ||
+          'Failed to complete authentication. Please try again.';
+        setError(message);
         setProcessing(false);
       }
     };
