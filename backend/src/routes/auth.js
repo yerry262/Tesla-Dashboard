@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { v4: uuidv4 } = require('uuid');
+const { randomUUID } = require('crypto');
 const teslaApi = require('../services/teslaApi');
 
 // Store for OAuth states (in production, use Redis or database)
@@ -11,7 +11,7 @@ const oauthStates = new Map();
  * Initiate OAuth flow - returns authorization URL
  */
 router.get('/login', (req, res) => {
-  const state = uuidv4();
+  const state = randomUUID();
   oauthStates.set(state, { createdAt: Date.now() });
   
   // Clean up old states (older than 10 minutes)
