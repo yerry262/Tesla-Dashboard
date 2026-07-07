@@ -11,6 +11,9 @@ const API_URL = isProduction
 const api = axios.create({
   baseURL: API_URL,
   withCredentials: true,
+  // Fail fast instead of hanging forever on an unreachable backend,
+  // but leave headroom for Railway cold starts and vehicle wake-ups
+  timeout: 30000,
   headers: {
     'Content-Type': 'application/json'
   }
